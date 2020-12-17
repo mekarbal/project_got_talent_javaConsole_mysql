@@ -7,6 +7,8 @@ import com.got_talent.controllers.AdminController;
 import com.got_talent.controllers.ParticipationController;
 import com.got_talent.controllers.UserController;
 
+import enums.Message;
+
 public class Test {
 
 	public static void main(String[] args) {
@@ -19,9 +21,9 @@ public class Test {
 
 		while (true) {
 
-			System.out.println("Main Menu");
-			System.out.println("1. I'm an User");
-			System.out.println("2. I'm an Admin");
+			System.out.println("Menu");
+			System.out.println("1. Utilisateur");
+			System.out.println("2. Admin");
 
 			int choice = input.nextInt();
 
@@ -96,6 +98,7 @@ public class Test {
 							break;
 						case 4:
 							admin.findParticipationByUserEmail();
+							
 							break;
 						case 5:
 							try {
@@ -116,7 +119,7 @@ public class Test {
 
 					}
 				} else {
-					System.out.println("Wrong Cridentials !");
+					System.out.println(Message.WRONG_CREDINTIAL.getDescription());
 				}
 
 			}
@@ -127,12 +130,12 @@ public class Test {
 
 		Scanner liSele = new Scanner(System.in);
 
-		System.out.println("Choose an action:");
-		System.out.println("*****************************\n");
-		System.out.println("1 - Register");
-		System.out.println("2 - Update your information");
-		System.out.println("3 - Participate to Youcode Got Talent");
-		System.out.println("4 - Back");
+		System.out.println("Choisissez une action:");
+		System.out.println("############################\n");
+		System.out.println("1 - S'inscrire");
+		System.out.println("2 - Mettez à jour vos informations");
+		System.out.println("3 - Participez à Youcode Got Talent");
+		System.out.println("4 - Retour");
 
 		return liSele.nextInt();
 
@@ -142,14 +145,14 @@ public class Test {
 
 		Scanner liSele = new Scanner(System.in);
 
-		System.out.println("Choose an action:");
-		System.out.println("*****************************\n");
-		System.out.println("1 - Find all users");
-		System.out.println("2 - Find user by  id");
-		System.out.println("3 - Find all participations");
-		System.out.println("4 - Find Participation by email");
-		System.out.println("5 - Validate Participation ");
-		System.out.println("6 - LogOut");
+		System.out.println("Choisissez une action:");
+		System.out.println("############################\n");
+		System.out.println("1 - Trouver tous les utilisateurs");
+		System.out.println("2 - Rechercher un utilisateur par identifiant");
+		System.out.println("3 - Retrouvez toutes les participations");
+		System.out.println("4 - Trouver une participation par email");
+		System.out.println("5 - Valider la participation ");
+		System.out.println("6 - Se deconnecter");
 
 		return liSele.nextInt();
 

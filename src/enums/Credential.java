@@ -1,7 +1,7 @@
 package enums;
 
 public enum Credential {
-	ACCOUNT("me.karbal@gmail.com"),
+	ACCOUNT("Email de l'admin"),
 	PASSWORD("mot de passe");
 
 	private String accPass;

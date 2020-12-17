@@ -24,7 +24,7 @@ public class AdminController {
 
 	Config config;
 	Scanner input = new Scanner(System.in);
-
+	String emailRegex = "^(.+)@(.+)$";
 	public AdminController() {
 		config = new Config("jdbc:mysql://localhost/got_talent", "root", "");
 
@@ -59,14 +59,15 @@ public class AdminController {
 		String query = "Update adminsession SET  is_connected=true WHERE id=15970010";
 		PreparedStatement stmt = config.connection().prepareStatement(query);
 		stmt.executeUpdate();
-		System.out.println("Admin Logged in succesfully");
+		System.out.println(enums.Message.ADMIN_LOGGED.getDescription());
 	}
+
 	public void adminLoggedOut() throws SQLException {
-		
+
 		String sqlString = "Update adminsession SET  is_connected=false WHERE id=15970010";
 		PreparedStatement statement = config.connection().prepareStatement(sqlString);
 		statement.executeUpdate();
-		System.out.println("Admin Logged out succesfully");
+		System.out.println(enums.Message.ADMIN_LOGOUT.getDescription());
 	}
 
 	public List<Participation> findParticipations() throws SQLException {
@@ -76,12 +77,12 @@ public class AdminController {
 
 		while (resultSet.next()) {
 
-			System.out.print(resultSet.getString("id_category")+" ");
-			System.out.print(resultSet.getString("id_user")+" ");
-			System.out.print(resultSet.getString("description")+" ");
-			System.out.print(resultSet.getString("show_start_time")+" ");
-			System.out.print(resultSet.getString("show_end_time")+" ");
-			System.out.println(resultSet.getString("is_accepted")+" ");
+			System.out.print(resultSet.getString("id_category") + " ");
+			System.out.print(resultSet.getString("id_user") + " ");
+			System.out.print(resultSet.getString("description") + " ");
+			System.out.print(resultSet.getString("show_start_time") + " ");
+			System.out.print(resultSet.getString("show_end_time") + " ");
+			System.out.println(resultSet.getString("is_accepted") + " ");
 
 		}
 
@@ -95,31 +96,35 @@ public class AdminController {
 		String email = input.next();
 		Participation participation = new Participation();
 
-		try {
-			String query = "SELECT * FROM participation p, users u WHERE p.id_user= u.id AND u.email='" + email
-					+ "'";
-			PreparedStatement stmt = config.connection().prepareStatement(query);
-			ResultSet resultSet = stmt.executeQuery(query);
-			while (resultSet.next()) {
+		if (email.matches(emailRegex)) {
+			try {
+				String query = "SELECT * FROM participation p, users u WHERE p.id_user= u.id AND u.email='" + email + "'";
+				PreparedStatement stmt = config.connection().prepareStatement(query);
+				ResultSet resultSet = stmt.executeQuery(query);
+				while (resultSet.next()) {
 
-				System.out.print(resultSet.getString("id_user")+" ");
-				System.out.println(resultSet.getString("description"));
+					System.out.print(resultSet.getString("id_user") + " ");
+					System.out.println(resultSet.getString("description"));
 
+				}
+			} catch (Exception e) {
+				System.out.println("Vous avez une erreur " + e.getMessage());
 			}
-		} catch (Exception e) {
-			System.out.println("Vous avez une erreur " + e.getMessage());
+		}else {
+			System.out.println(enums.Message.ERROR_EMAIL.getDescription());
 		}
 
 		return null;
 
 	}
-	public boolean is_Exist(String email,String password) throws SQLException {
-		String query = "SELECT * FROM administrator WHERE email='"+email+"' AND password='"+password+"'";
-		PreparedStatement stmt = config.connection().prepareStatement(query);
-		ResultSet resultSet = stmt.executeQuery(query);
-		
-		return false;
-	}
+
+//	public boolean is_Exist(String email, String password) throws SQLException {
+//		String query = "SELECT * FROM administrator WHERE email='" + email + "' AND password='" + password + "'";
+//		PreparedStatement stmt = config.connection().prepareStatement(query);
+//		ResultSet resultSet = stmt.executeQuery(query);
+//
+//		return false;
+//	}
 
 	public void validateParticipation() throws SQLException {
 		findParticipations();
@@ -140,31 +145,31 @@ public class AdminController {
 				if (valid == 1) {
 					String query1 = "Update participation SET  is_accepted=true WHERE id_user='" + idUser
 							+ "' AND id_category='" + idCat + "'  ";
-					String query2 ="SELECT * FROM users WHERE id='"+idUser+"'";
+					String query2 = "SELECT * FROM users WHERE id='" + idUser + "'";
 					PreparedStatement stmt = config.connection().prepareStatement(query1);
 					PreparedStatement stmt2 = config.connection().prepareStatement(query2);
 					stmt.executeUpdate();
-					ResultSet rs=stmt2.executeQuery();
-					if(rs.next()) {
+					ResultSet rs = stmt2.executeQuery();
+					if (rs.next()) {
 						sendMail(rs.getString("email"));
 					}
-					System.out.println("la participation a ete bien acceptée");
-					
+					System.out.println(enums.Message.PARTI_ACCEPT.getDescription());
+
 				} else if (valid == 2) {
 					String query1 = "Update participation SET  is_accepted=true WHERE id_user='" + idUser
 							+ "' AND id_category='" + idCat + "'  ";
 					PreparedStatement stmt = config.connection().prepareStatement(query1);
 					stmt.executeUpdate();
-					System.out.println("la participation a ete refusée");
+					System.out.println(enums.Message.PARTI_DENY.getDescription());
 				} else {
-					System.out.println("Vous avez choisi un choix n'existe pas");
+					System.out.println(enums.Message.PARTI_EXIST.getDescription());
 				}
 			} else {
-				System.out.println("Essayer d\'ajouter un nomber");
+				System.out.println("V");
 			}
 
 		} else {
-			System.out.println("Cette participation n\'existe pas");
+			System.out.println(enums.Message.PARTI_NOTEXIST.getDescription());
 		}
 
 	}
@@ -173,33 +178,32 @@ public class AdminController {
 
 		Properties properties = new Properties();
 
-		properties.put(ConDb.AUTH.getProps(),ConDb.AUTH.getValue());
-		properties.put(ConDb.SSL.getProps(),ConDb.SSL.getValue());
-		properties.put(ConDb.HOST.getProps(),ConDb.HOST.getValue());
-		properties.put(ConDb.PORT.getProps(),ConDb.PORT.getValue());
+		properties.put(ConDb.AUTH.getProps(), ConDb.AUTH.getValue());
+		properties.put(ConDb.SSL.getProps(), ConDb.SSL.getValue());
+		properties.put(ConDb.HOST.getProps(), ConDb.HOST.getValue());
+		properties.put(ConDb.PORT.getProps(), ConDb.PORT.getValue());
 		String myAccount = Credential.ACCOUNT.getAccPass();
 		String password = Credential.PASSWORD.getAccPass();
-		
+
 		Session session = Session.getDefaultInstance(properties, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(myAccount, password);
 			}
 		});
-		
-		try {  
-		     MimeMessage message = new MimeMessage(session);  
-		     message.setFrom(new InternetAddress(myAccount));  
-		     message.addRecipient(Message.RecipientType.TO,new InternetAddress(recEmail));  
-		     message.setSubject("YouCode Got Talent");  
-		     message.setText("Bonjour , Je tiens a vous informer que vous etes accepté de participer dans la competition youcode got talents.");  
 
-		       
-		    //send the message  
-		     Transport.send(message);  
-		  
-		   
-		     } catch (MessagingException e) {e.printStackTrace();}  
-		 }  
+		try {
+			MimeMessage message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(myAccount));
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(recEmail));
+			message.setSubject("YouCode Got Talent");
+			message.setText(
+					"Bonjour , Je tiens a vous informer que vous etes accepté de participer dans la competition youcode got talents.");
+
+			// send the message
+			Transport.send(message);
+
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
 	}
-
-
+}
